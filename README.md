@@ -6,6 +6,11 @@ the program will cover the following scenarios:
 1. New home purchase
 2. What if an additional payment is made?
 3. Refinancing an existing mortgage
-4. Approximate proceeds from a sale
+4. Approximate proceeds from a sale 
+
 The program will provide spreadsheets as well as graphs showing current and furture payment examples.
 This program will not take in to account escrow, taxes, or mortgage insurance.
+
+Added arrays for monthly interest and principal.  Next step to work on data frames and graphs.
+
+removed option of different down payments and added option for user to choose down payment
