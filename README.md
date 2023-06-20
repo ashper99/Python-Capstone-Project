@@ -14,3 +14,5 @@ This program will not take in to account escrow, taxes, or mortgage insurance.
 Added arrays for monthly interest and principal.  Next step to work on data frames and graphs.
 
 removed option of different down payments and added option for user to choose down payment
+
+DataFrame for totals is complete.  Next up is graphs

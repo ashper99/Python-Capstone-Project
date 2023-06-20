@@ -68,6 +68,58 @@ def down_payment():
         else:
             print('Please enter a valid number')
     return pctdown
+def calculation():
+    #this will make the calculations necessary to come up with the projected payments
+
+    global a, b, c, d
+    month_term = c*12 #years times 12 months
+    monthly_interest = 1 + (b)/(12*100)
+
+    mortgage_amount = a - (a*(d/100)) #total amount of loan
+
+    #calculate monthly payment
+    monthly_payment = (round(mortgage_amount*(monthly_interest**month_term)*(1-monthly_interest)/(1-monthly_interest**month_term), 2))
+
+    # calculate the monthly interest and monthly principal remaining
+    monthlyinterest = []
+    monthly_principal = []
+
+    totalamount = mortgage_amount #placeholder since mortgage_amount is modified below
+
+    for i in range(1, month_term + 1):
+        monthint = mortgage_amount*(monthly_interest - 1)
+        mortgage_amount = mortgage_amount - (monthly_payment - monthint)
+        monthlyinterest = np.append(monthlyinterest, monthint)
+        monthly_principal = np.append(monthly_principal, mortgage_amount)
+
+    np.set_printoptions(suppress=True) #remove scientific notation from monthly_principal when printed
+
+    #calculate the total interest paid
+    total_interest = 0
+    for i in monthlyinterest:
+        total_interest += i
+
+    #total amount paid for the mortgage
+    total_mortgage = totalamount + total_interest
+
+    # creating dataframe for results
+    #formatting numbers for proper display
+    a1 = ("${:0,.2f}".format(a))
+    b1 = ("{:.2%}".format(b/100))
+    d1 = ("{:.2%}".format(d/100))
+
+    # creating dataframe for results
+    monthly_payment1 = ("${:0,.2f}".format(monthly_payment))
+    total_interest1 = ("${:0,.2f}".format(total_interest))
+    total_mortgage1 = ("${:0,.2f}".format(total_mortgage))
+
+    label_values = ['Sales Price', 'Interest Rate', 'Mortgage Term', 'Down Payment', 'Monthly Payment', 'Total Interest', 'Total Paid']
+    column_values = ["Totals"]
+    mortgage_array = np.array([a1, b1, c, d1, monthly_payment1, total_interest1, total_mortgage1])
+
+    mortgage_data = pd.DataFrame(data = mortgage_array, index = label_values, columns = column_values)
+
+    print(mortgage_data)
 
 def correction():
     #allows user to make corrections to chosen line item
@@ -108,47 +160,19 @@ def verify():
 
     while True:
         correct = input("Is the information correct? (yes/no): \n")
-        if correct.lower() == 'yes':
-
-            break
-        elif correct.lower() == 'no':
-
+        if correct.lower() == 'no':
             correction()
             print('Purchase price $ ' + format(a, ',.2f'), '\n')
             print('Interest Rate ', b, '%\n')
             print('Mortgage Term ', c, 'years\n')
             print('Down Payment ', d, '%\n')
-
+        elif correct.lower() == 'yes':
+            calculation()
+            break
         else:
-            print('Type yes or no')
+            print('Enter yes or no')
             continue
-def calculation():
-    #this will make the calculations necessary to come up with the projected payments
 
-    global a, b, c, d
-    month_term = c*12 #years times 12 months
-    monthly_interest = 1 + (b)/(12*100)
-
-    mortgage_amount = a - (a*(d/100)) #total amount of loan
-
-
-    #calculate monthly payment
-    monthly_payment = (round(mortgage_amount*(monthly_interest**month_term)*(1-monthly_interest)/(1-monthly_interest**month_term), 2))
-
-
-    # calculate the monthly interest and monthly principal remaining
-    monthlyinterest = []
-    monthly_principal = []
-
-    for i in range(1, month_term + 1):
-        monthint = mortgage_amount*(monthly_interest - 1)
-        mortgage_amount = mortgage_amount - (monthly_payment - monthint)
-        monthlyinterest = np.append(monthlyinterest, monthint)
-        monthly_principal = np.append(monthly_principal, mortgage_amount)
-
-    np.set_printoptions(suppress=True)
-
-    
 #main program
 
 a = mortgage()
@@ -156,7 +180,7 @@ b = interest()
 c = mortgage_term()
 d = down_payment()
 verify()
-calculation()
+
 
 
 
