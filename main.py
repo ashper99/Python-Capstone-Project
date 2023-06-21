@@ -3,7 +3,9 @@
 # The user will also be given the opportunity to decide on a refinance option, early payoff, or sale
 # proceeds.
 
-import numpy as np, matplotlib.pyplot as plt, seaborn as sns, pandas as pd, tkinter as tk
+import numpy as np, matplotlib.pyplot as plt, seaborn as sns, pandas as pd
+import csv
+
 def mortgage():
     #User inputs the purchase price
 
@@ -33,7 +35,7 @@ def interest():
         except ValueError:
             print("Please input as a percentage, for example, 3.9")
             continue
-        if interest_rate > 0:
+        if interest_rate >= 0 and interest_rate <= 20:
             break
         else:
             print("Please input a valid rate")
@@ -63,7 +65,7 @@ def down_payment():
         except ValueError:
             print('Please enter a valid number')
             continue
-        if pctdown > 0:
+        if pctdown >= 0 and pctdown <= 100:
             break
         else:
             print('Please enter a valid number')
@@ -85,6 +87,7 @@ def calculation():
     monthly_principal = []
 
     totalamount = mortgage_amount #placeholder since mortgage_amount is modified below
+    totalamount1 = mortgage_amount #another placeholder since I use totalamount
 
     for i in range(1, month_term + 1):
         monthint = mortgage_amount*(monthly_interest - 1)
@@ -107,8 +110,6 @@ def calculation():
     a1 = ("${:0,.2f}".format(a))
     b1 = ("{:.2%}".format(b/100))
     d1 = ("{:.2%}".format(d/100))
-
-    # creating dataframe for results
     monthly_payment1 = ("${:0,.2f}".format(monthly_payment))
     total_interest1 = ("${:0,.2f}".format(total_interest))
     total_mortgage1 = ("${:0,.2f}".format(total_mortgage))
@@ -120,6 +121,47 @@ def calculation():
     mortgage_data = pd.DataFrame(data = mortgage_array, index = label_values, columns = column_values)
 
     print(mortgage_data)
+
+    #create remainder of spreadsheet array
+    months = np.arange(1, (month_term + 1))
+    principal_paid = []
+    principalamt = 0
+
+    #create array for monthly principal
+    for i in monthly_principal:
+        principalamt = totalamount - i
+        totalamount -= principalamt
+        principal_paid = np.append(principal_paid, principalamt)
+
+    #array for starting balance
+    start_balance =[totalamount1]
+    for i in monthly_principal[0:(month_term - 1)]:
+        start_balance = np.append(start_balance, i)
+
+    #ending balance should be zero
+
+    monthly_principal[-1] = 0
+
+    #create the dataframe
+
+    payment_values = ['Starting Balance', 'Principal Paid', 'Interest Paid', 'Ending Balance']
+
+    payment_data = pd.DataFrame(list(zip(start_balance, principal_paid, monthlyinterest, monthly_principal)), index = months, columns = payment_values)
+    payment_data = payment_data.round(2)
+
+    while True:
+        hard_copy = input('Do you wish to save a copy of the monthly payment structure?  yes/no \n')
+        if hard_copy == 'no':
+            print('Thank you and have a wonderful day')
+            break
+        elif hard_copy == 'yes':
+
+            payment_data.to_csv('mortgage.csv', index = True)
+            print('Your file has been saved as mortgage.csv')
+            break
+        else:
+            print('Please enter yes or no')
+            continue
 
 def correction():
     #allows user to make corrections to chosen line item
@@ -180,6 +222,7 @@ b = interest()
 c = mortgage_term()
 d = down_payment()
 verify()
+
 
 
 

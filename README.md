@@ -11,8 +11,7 @@ the program will cover the following scenarios:
 The program will provide spreadsheets as well as graphs showing current and furture payment examples.
 This program will not take in to account escrow, taxes, or mortgage insurance.
 
-Added arrays for monthly interest and principal.  Next step to work on data frames and graphs.
+The section for first mortgage is now fully functional.  User is able to input purchase price, interest, term, and down payment.  Once calculated the user is provided with the relavant information and an option to print the monthly breakdown.
 
-removed option of different down payments and added option for user to choose down payment
 
-DataFrame for totals is complete.  Next up is graphs
+
