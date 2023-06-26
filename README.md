@@ -1,17 +1,24 @@
 # NCLAB-Capstone-Project
-Repository for my capstone project in Python via NCLab
-I am in the process of creating a program which will allow the user to calculate the monthly payments
-for a new home purchase and much more.
-the program will cover the following scenarios:
-1. New home purchase
-2. What if an additional payment is made?
-3. Refinancing an existing mortgage
-4. Approximate proceeds from a sale 
+The following program uses various modules to calculate the following information for the user
 
-The program will provide spreadsheets as well as graphs showing current and furture payment examples.
-This program will not take in to account escrow, taxes, or mortgage insurance.
+1. Initial payments for purchase of a house
+2. Refinancing an existing mortgage
+3. What if I make an additional payment to principal
+4. Sales proceeds when the house sells
 
-The section for first mortgage is now fully functional.  User is able to input purchase price, interest, term, and down payment.  Once calculated the user is provided with the relavant information and an option to print the monthly breakdown.
+The program will be utilizing Tkinter as the GUI.
 
+Progress to date includes the first two windows of the program, which includes the 
+initial start page which asks the user to input the choices of one of
+the four items mentioned above.
+A second window will pop up once the choice is made.  I am currently finalizing the second window with 
+the calculations for the payments.
+
+The program will also provide the user with the option to save an amortization file 
+to their local computer.  Graphs will also be provided to show the history of loan
+payments.
+
+Functionality will be added later to include various other tools, such as home equity
+and new purchase with sale of existing options.
 
 

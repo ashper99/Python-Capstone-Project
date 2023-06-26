@@ -1,5 +1,5 @@
 # This program will allow the user to insert the parameters required to determine the monthly mortgage
-# rate based on a series of down payments from 5 - 20%.
+# rate based on a given down payment.
 # The user will also be given the opportunity to decide on a refinance option, early payoff, or sale
 # proceeds.
 
