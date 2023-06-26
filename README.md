@@ -18,7 +18,7 @@ The program will also provide the user with the option to save an amortization f
 to their local computer.  Graphs will also be provided to show the history of loan
 payments.
 
-Functionality will be added later to include various other tools, such as home equity
-and new purchase with sale of existing options.
+Added verification window to program.  In the process of giving the user the option to make changes
+
 
 
