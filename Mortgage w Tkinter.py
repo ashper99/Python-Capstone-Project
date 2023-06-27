@@ -6,9 +6,9 @@ import csv
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tkinter import *
+from tkinter import messagebox
 
 #allow for use of different functions for different windows
-
 
 def choice():
     if module.get() == 'Mortgage Calculation':
@@ -42,8 +42,6 @@ proceedscalc = Radiobutton(new_file, text = 'Proceeds from sale', variable = mod
 
 choose = Button(new_file, text = "Enter", command = choice)
 
-
-
 #Insert Buttons
 
 mortgage.grid(row = 2, column = 0, sticky = 'W')
@@ -52,48 +50,147 @@ extra_payment.grid(row = 4, column = 0, sticky = 'W')
 proceedscalc.grid(row = 5, column = 0, sticky = 'W')
 choose.grid(row = 6, column = 1, sticky = 'W', pady = 10)
 
+def calculate_result():
+
+    try:
+        verify_principal1 = int(principal_verify.get())
+        verify_interest1 = float(interest_verify.get())
+        verify_term1 = int(term_verify.get())
+        verify_downpayment1 = float(downpayment_verify.get())
+        if verify_principal1 <= 0:
+            messagebox.showerror("Principal Error", "Please enter a positive whole number")
+            return
+        elif verify_interest1 < 0:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_interest1 > 20:
+            messagebox.showerror("error", "Please enter a valid interest rate")
+            return
+        elif verify_term1 <= 0:
+            messagebox.showerror("error", "Please enter a valid term in years")
+            return
+        elif verify_term1 >= 51:
+            messagebox.showerror("error", "Please enter a valid term in years")
+            return
+        elif verify_downpayment1 < 0:
+            messagebox.showerror("error", "Please enter a valid down payment")
+            return
+        elif verify_downpayment1 > 50:
+            messagebox.showerror("error", "Please enter a valid down payment")
+            return
+        else:
+            pass
+    except ValueError:
+        messagebox.showerror("error", "Please enter a whole number")
+        return
+
+    calculate = Toplevel()
+    calculate.grab_set()
+    calculate.title("Results")
+    calculate.geometry('800x400')
+
+
 
 
 def verification():
-    # add new window for the verification
+
+    # verifying the values entered are correct
+
+    try:
+        verify_principal = int(principal_main.get())
+        verify_interest = float(interest_main.get())
+        verify_term = int(term_main.get())
+        verify_downpayment = float(downpayment_main.get())
+        if verify_principal <= 0:
+            messagebox.showerror("Purchase Price Error", "Please enter a positive whole number")
+            return
+        elif verify_interest < 0:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_interest > 20:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_term <= 0:
+            messagebox.showerror("Term Error", "Please enter a valid term in years")
+            return
+        elif verify_term >= 51:
+            messagebox.showerror("Term Error", "Please enter a valid term in years")
+            return
+        elif verify_downpayment < 0:
+            messagebox.showerror("Down Payment Error", "Please enter a valid down payment")
+            return
+        elif verify_downpayment > 50:
+            messagebox.showerror("Down Payment Error", "Please enter a valid down payment")
+            return
+        else:
+            pass
+    except ValueError:
+        messagebox.showerror("Value Error", "Please enter a valid number")
+        return
+
+    #create a new window to verify information entered
+
     verify_info = Toplevel()
+    verify_info.grab_set()
     verify_info.title("Verification")
     verify_info.geometry('800x400')
 
-    # give user to make changes or keep existing
+    # give user option to make changes or keep existing
 
     verifylabelone = Label(verify_info, text = "Please verify the information provided", font = ('Arial', 20))
     verifylabelone.grid(row = 0, column = 1)
-    verifylabeltwo = Label(verify_info, text = "If correct, press enter, otherwise choose", font = ('Arial', 20))
+    verifylabeltwo = Label(verify_info, text = "If correct, press submit, otherwise make", font = ('Arial', 20))
     verifylabeltwo.grid(row = 1, column = 1)
-    verifylabelthree = Label(verify_info, text = "the item to change, then press enter",font = ('Arial', 20))
+    verifylabelthree = Label(verify_info, text = "corrections and press submit",font = ('Arial', 20))
     verifylabelthree.grid(row = 2, column = 1)
 
+    #create entry widget showing values entered
 
-    #show inputs with checkbox to change
+    update_principal = Entry(verify_info, width = 20)
+    update_principal.grid(row = 3, column = 1, pady = (20, 0), padx = 20, ipadx = 50)
+    update_interest = Entry(verify_info, width =20)
+    update_interest.grid(row=4, column=1, padx = 20, ipadx = 50)
+    update_term = Entry(verify_info, width=20)
+    update_term.grid(row=5, column=1, padx=20, ipadx=50)
+    update_downpayment = Entry(verify_info, width=20)
+    update_downpayment.grid(row=6, column=1, padx=20, ipadx=50)
 
-    verify_choice1 = IntVar()
-    verify_choice2 = IntVar()
-    verify_choice3 = IntVar()
-    verify_choice4 = IntVar()
-    verify_choice5 = IntVar()
+    #add labels to show on screen
 
+    update_principal_label = Label(verify_info, text = "Verify Principal")
+    update_principal_label.grid(row = 3, column = 0, pady = (20,0), padx = (80,0), sticky = 'W')
+    update_interest_label = Label(verify_info, text = "Verify Interest")
+    update_interest_label.grid(row = 4, column = 0, padx = (80,0), sticky = 'W')
+    update_term_label = Label(verify_info, text = "Verify Yearly Terms")
+    update_term_label.grid(row = 5, column = 0, padx = (80,0), sticky = 'W')
+    update_downpayment_label = Label(verify_info, text = "Down Payment")
+    update_downpayment_label.grid(row = 6, column = 0, padx = (80,0), sticky = 'W')
 
-    update_principal = Checkbutton(verify_info, text = "Purchase Price   $ " + principal_main.get(), variable = verify_choice1)
-    update_principal.grid(row = 3, column = 0, pady = (20, 0), sticky = 'W')
-    update_interest = Checkbutton(verify_info, text="Interest Rate  " + interest_main.get() + "%",
-                                   variable=verify_choice2)
-    update_interest.grid(row=4, column=0,  sticky='W')
-    update_term = Checkbutton(verify_info, text="Term in years  " + term_main.get(),
-                                   variable=verify_choice3)
-    update_term.grid(row=5, column=0, sticky='W')
-    update_downpayment = Checkbutton(verify_info, text= "Down Payment Percentage  " + downpayment_main.get() + "%",
-                                   variable=verify_choice4)
-    update_downpayment.grid(row=6, column=0,  sticky='W')
-    correct_info = Checkbutton(verify_info, text = "Everything looks good", variable = verify_choice5)
-    correct_info.grid(row = 7, column = 0, sticky = 'W')
+    #show the values within the entry fields
 
+    update_principal.insert(5, principal_main.get())
+    update_interest.insert(5, interest_main.get())
+    update_term.insert(5, term_main.get())
+    update_downpayment.insert(5, downpayment_main.get())
 
+    #redo the gloabl variables
+
+    global principal_verify
+    principal_verify = update_principal
+    global interest_verify
+    interest_verify = update_interest
+    global term_verify
+    term_verify = update_term
+    global downpayment_verify
+    downpayment_verify = update_downpayment
+
+    #create the submit button
+
+    submit_button = Button(verify_info, text = "Submit", command = lambda: calculate_result())
+    submit_button.grid(row = 7, column = 1, pady = (20,0))
+
+# this starts the function for the first mortgage calculation
+# by creating a new window
 def mortgagecalc():
 
 #this starts the function for the first mortgage calculation
@@ -111,10 +208,10 @@ def mortgagecalc():
     mortgage_label2.grid(row=1, column=0, columnspan = 2, padx = 40, pady = (0,20))
 
 #adding the input fields
-    principal = StringVar()
-    interest = StringVar()
-    term = StringVar()
-    downpayment = StringVar()
+    principal = IntVar()
+    interest = DoubleVar()
+    term = IntVar()
+    downpayment = DoubleVar()
 
     principal = Entry(mortgage_calculator, width = 20)
     principal.grid(row = 3, column = 1, padx = 20, ipadx = 50)
@@ -136,6 +233,8 @@ def mortgagecalc():
     downpayment_label = Label(mortgage_calculator, text = "Enter down payment as a percentage e.g 5 for 5%", padx = 40)
     downpayment_label.grid(row = 6, column = 0, padx = 40, pady = (0,5), sticky = "W")
 
+    #assign values as global
+
     global principal_main
     principal_main = principal
     global interest_main
@@ -145,12 +244,12 @@ def mortgagecalc():
     global downpayment_main
     downpayment_main = downpayment
 
-
-
 #create submit button
 
-    submit_info = Button(mortgage_calculator, text = "Enter", command = lambda: verification())
+    submit_info = Button(mortgage_calculator, text = "Submit", command = lambda: verification())
     submit_info.grid(row = 7, column = 0, sticky = 'E', pady = 10)
+
+
 
 
 def refinancecalc():
