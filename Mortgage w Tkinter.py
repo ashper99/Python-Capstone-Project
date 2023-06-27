@@ -84,10 +84,22 @@ def calculate_result():
         messagebox.showerror("error", "Please enter a whole number")
         return
 
-    calculate = Toplevel()
-    calculate.grab_set()
-    calculate.title("Results")
-    calculate.geometry('800x400')
+    calculation.pack(fill='both', expand=1)
+    verify_info.pack_forget()
+
+    #creating lists for dataframe use
+
+    monthly_principal = []
+    interest_paid = []
+    running_balance = []
+
+    #making the calculations
+
+    month_term = term_verify*12
+    monthly_interest = 1 + (interest_verify)/(12*100)
+    principal_amt = principal_verify*(downpayment_verify/100)
+
+
 
 
 
@@ -128,12 +140,10 @@ def verification():
         messagebox.showerror("Value Error", "Please enter a valid number")
         return
 
-    #create a new window to verify information entered
+    #open a new frame to verify information entered
 
-    verify_info = Toplevel()
-    verify_info.grab_set()
-    verify_info.title("Verification")
-    verify_info.geometry('800x400')
+    verify_info.pack(fill='both', expand = 1)
+    close_mortgage_calc.pack_forget()
 
     # give user option to make changes or keep existing
 
@@ -186,7 +196,7 @@ def verification():
 
     #create the submit button
 
-    submit_button = Button(verify_info, text = "Submit", command = lambda: calculate_result())
+    submit_button = Button(verify_info, text = "Submit", command = calculate_result)
     submit_button.grid(row = 7, column = 1, pady = (20,0))
 
 # this starts the function for the first mortgage calculation
@@ -200,10 +210,12 @@ def mortgagecalc():
     mortgage_calculator.title("Mortgage Calculator")
     mortgage_calculator.geometry('800x400')
 
+    mortgage_calculator1 = LabelFrame(mortgage_calculator)
+    mortgage_calculator1.pack(fill='both', expand = 1)
 
 #introduction line
-    mortgage_label1 = Label(mortgage_calculator, text = "Please enter the information", font = ('Arial', 20))
-    mortgage_label2 = Label(mortgage_calculator, text = "to calculate your monthly payment", font = ('Arial', 20))
+    mortgage_label1 = Label(mortgage_calculator1, text = "Please enter the information", font = ('Arial', 20))
+    mortgage_label2 = Label(mortgage_calculator1, text = "to calculate your monthly payment", font = ('Arial', 20))
     mortgage_label1.grid(row = 0, column = 0, columnspan = 2, padx =40)
     mortgage_label2.grid(row=1, column=0, columnspan = 2, padx = 40, pady = (0,20))
 
@@ -213,24 +225,24 @@ def mortgagecalc():
     term = IntVar()
     downpayment = DoubleVar()
 
-    principal = Entry(mortgage_calculator, width = 20)
+    principal = Entry(mortgage_calculator1, width = 20)
     principal.grid(row = 3, column = 1, padx = 20, ipadx = 50)
-    interest = Entry(mortgage_calculator, width = 20)
+    interest = Entry(mortgage_calculator1, width = 20)
     interest.grid(row = 4, column = 1, ipadx = 50)
-    term = Entry(mortgage_calculator, width = 20)
+    term = Entry(mortgage_calculator1, width = 20)
     term.grid(row = 5, column = 1, ipadx = 50)
-    downpayment = Entry(mortgage_calculator, width = 20)
+    downpayment = Entry(mortgage_calculator1, width = 20)
     downpayment.grid(row = 6, column =1, ipadx = 50)
 
 #Create input labels
 
-    principal_label = Label(mortgage_calculator, text = "Enter purchase price as a whole number  e.g 300000", padx = 40)
+    principal_label = Label(mortgage_calculator1, text = "Enter purchase price as a whole number  e.g 300000", padx = 40)
     principal_label.grid(row = 3, column = 0, padx = 40, pady = (0,5), sticky = "W")
-    interest_label = Label(mortgage_calculator, text="Enter interest as a percentage  e.g 3.9 for 3.9%", padx=40)
+    interest_label = Label(mortgage_calculator1, text="Enter interest as a percentage  e.g 3.9 for 3.9%", padx=40)
     interest_label.grid(row = 4, column = 0, padx = 40, pady = (0,5), sticky = "W")
-    term_label = Label(mortgage_calculator, text = "Enter the term in years  e.g 30 for 30 years", padx = 40)
+    term_label = Label(mortgage_calculator1, text = "Enter the term in years  e.g 30 for 30 years", padx = 40)
     term_label.grid(row = 5, column = 0, padx = 40, pady = (0,5), sticky = "W")
-    downpayment_label = Label(mortgage_calculator, text = "Enter down payment as a percentage e.g 5 for 5%", padx = 40)
+    downpayment_label = Label(mortgage_calculator1, text = "Enter down payment as a percentage e.g 5 for 5%", padx = 40)
     downpayment_label.grid(row = 6, column = 0, padx = 40, pady = (0,5), sticky = "W")
 
     #assign values as global
@@ -244,9 +256,20 @@ def mortgagecalc():
     global downpayment_main
     downpayment_main = downpayment
 
+    #creating frames and assigning global variables
+
+    verify_frame = LabelFrame(mortgage_calculator)
+    global verify_info
+    verify_info = verify_frame
+    global close_mortgage_calc
+    close_mortgage_calc = mortgage_calculator1
+    calculate_frame = LabelFrame(mortgage_calculator)
+    global calculation
+    calculation = calculate_frame
+
 #create submit button
 
-    submit_info = Button(mortgage_calculator, text = "Submit", command = lambda: verification())
+    submit_info = Button(mortgage_calculator1, text = "Submit", command = verification)
     submit_info.grid(row = 7, column = 0, sticky = 'E', pady = 10)
 
 
