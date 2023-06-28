@@ -2,17 +2,16 @@
 
 import numpy as np
 import pandas as pd
-import csv
-import matplotlib.pyplot as plt
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog, Tk
 import locale
 locale.setlocale(locale.LC_ALL, '')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from matplotlib.figure import Figure
+import matplotlib
 
 #allow for use of different functions for different windows
-
 def choice():
     if module.get() == 'Mortgage Calculation':
         mortgagecalc()
@@ -22,6 +21,10 @@ def choice():
         extrapaycalc()
     elif module.get() == 'proceeds':
         proceedscalc()
+
+#used to end the program
+def end_program1():
+    new_file.destroy()
 
 # creating the window
 new_file = Tk()
@@ -47,19 +50,35 @@ choose = Button(new_file, text = "Enter", command = choice)
 
 #Insert Buttons
 
-mortgage.grid(row = 2, column = 0, sticky = 'W')
-refinance.grid(row = 3, column = 0, sticky = 'W')
-extra_payment.grid(row = 4, column = 0, sticky = 'W')
-proceedscalc.grid(row = 5, column = 0, sticky = 'W')
-choose.grid(row = 6, column = 1, sticky = 'W', pady = 10)
+mortgage.grid(row = 2, column = 0, padx = 10, sticky = 'W')
+refinance.grid(row = 3, column = 0, padx = 10, sticky = 'W')
+extra_payment.grid(row = 4, column = 0, padx = 10,  sticky = 'W')
+proceedscalc.grid(row = 5, column = 0, padx = 10, sticky = 'W')
+choose.grid(row = 6, column = 1, pady = 20, ipadx = 20, sticky = 'W')
 
-def calculate_result():
+#button used to end program
+
+end_program = Button(new_file, text = 'Close', command = end_program1)
+end_program.grid(row = 6, column = 1, pady = 20, ipadx = 20, sticky = 'E')
+
+#function to save ammortization file
+def save(mortgage_result):
+    mortgage_result.to_csv('mortgage_result.csv', encoding = 'utf-8',index = False)
+
+def return_file(mortgage_calculator):
+    mortgage_calculator.withdraw()
+    new_file.deiconify()
+
+
+def calculate_result(mortgage_calculator, verify_frame, update_principal, update_interest,
+                                                         update_term, update_downpayment,
+                                                        calculate_frame):
 
     try:
-        verify_principal1 = int(principal_verify.get())
-        verify_interest1 = float(interest_verify.get())
-        verify_term1 = int(term_verify.get())
-        verify_downpayment1 = float(downpayment_verify.get())
+        verify_principal1 = int(update_principal.get())
+        verify_interest1 = float(update_interest.get())
+        verify_term1 = int(update_term.get())
+        verify_downpayment1 = float(update_downpayment.get())
         if verify_principal1 <= 0:
             messagebox.showerror("Principal Error", "Please enter a positive whole number")
             return
@@ -87,8 +106,8 @@ def calculate_result():
         messagebox.showerror("error", "Please enter a whole number")
         return
 
-    calculation.pack(fill='both', expand=1)
-    verify_info.pack_forget()
+    calculate_frame.pack(fill='both', expand=1)
+    verify_frame.pack_forget()
 
     #creating lists for dataframe use
 
@@ -140,17 +159,17 @@ def calculate_result():
     for i in running_balance[:-1]:
         begin_balance = np.append(begin_balance, i)
 
-
     #adding formatting
 
     verify_principal1 = locale.currency(verify_principal1, grouping = True)
     monthly_payment = locale.currency(monthly_payment, grouping = True)
     totalinterest = locale.currency(totalinterest, grouping = True)
     total_mortgage = locale.currency(total_mortgage, grouping = True)
+
    #creating the DataFrame
 
-    results = LabelFrame(calculation, width = 100, height = 100)
-    results.pack(pady = 20, padx = 20, side = LEFT)
+    results = LabelFrame(calculate_frame, width = 100, height = 100)
+    results.pack(pady = (0,70), padx = 20, side = LEFT)
     results1 = Label(results, text = "Mortgage Results", font = ('Arial', 12))
     results1.grid(row = 0, column = 0, columnspan = 2)
     saleprice = Label(results, text = "Sales Price")
@@ -181,11 +200,8 @@ def calculate_result():
     totalpaid_result.grid(row = 7, column = 0, sticky = 'W')
     totalpaid_result1 = Label(results, text = total_mortgage)
     totalpaid_result1.grid(row =7, column =1, sticky = 'E')
-
-    result_title1 = Label(calculation, text = 'Mortgage Calculated', font = ('Arial', 20))
-    result_title1.pack(anchor = 'nw', padx = (60,0))
-
-
+    result_title1 = Label(calculate_frame, text = 'Mortgage Calculated', font = ('Arial', 20))
+    result_title1.pack(anchor = 'nw', padx = (60,0), pady = (10,60))
 
     #create DataFrame
 
@@ -194,42 +210,52 @@ def calculate_result():
         month_num = np.append(month_num, months)
     month_num = (month_num.astype(int))
 
-
+    #columns array
 
     result_data = {'Beginning Balance' : begin_balance, 'Principal Paid' : monthly_principal, 'Interest Paid' : interest_paid, 'Ending Balance' : running_balance}
+
+    #format currency for dataframe
 
     mortgage_result = pd.DataFrame(result_data)
     for i in result_data.keys():
         mortgage_result[i] = mortgage_result[i].map(locale.currency)
     mortgage_result = mortgage_result.set_index(month_num)
 
-
     #create graph
 
     y1 = result_data['Principal Paid']
     y2 = result_data['Interest Paid']
     x = month_num
-    plt.title('Principal vs Interest over time')
-    graph = plt.Figure(figsize=(5,4), dpi = 100)
-    graph.add_subplot(111).plot(x, y1, y2)
+    y = ['Principal', 'Interest']
 
-    chart = FigureCanvasTkAgg(graph, calculation)
-
+    graph = Figure(figsize=(6,4))
+    ax = graph.add_subplot(111)
+    ax.set_title("Principal vs Interest Over Life of Loan")
+    ax.set_ylabel('Principal and Interest Payments')
+    ax.set_xlabel('Months')
+    ax.legend(['y'], fontsize = "80", loc = 'best')
+    ax.plot(x, y1, y2)
+    matplotlib.rcParams['figure.autolayout'] = True
+    chart = FigureCanvasTkAgg(graph, calculate_frame)
     chart.get_tk_widget().pack(pady = (20,0))
 
+    #create save and close buttons
+    save_button = Label(calculate_frame, text = "Press Save to save a CSV file.  Press Close to return to main screen")
+    save_button.pack(side = BOTTOM, padx =(0,120))
+    btnsave = Button(calculate_frame, text = 'Save', command = lambda: save(mortgage_result))
+    btnsave.pack(side = LEFT, padx = 200, pady = (10,10), ipadx = 20)
+    btnclose = Button(calculate_frame, text = 'Close', command = lambda: return_file(mortgage_calculator))
+    btnclose.pack(side = LEFT, padx = (0, 150), ipadx = (20), pady = (10,10))
 
-
-
-
-def verification():
+def verification(mortgage_calculator, verify_frame, principal, interest, term, downpayment, mortgage_calculator1, calculate_frame):
 
     # verifying the values entered are correct
 
     try:
-        verify_principal = int(principal_main.get())
-        verify_interest = float(interest_main.get())
-        verify_term = int(term_main.get())
-        verify_downpayment = float(downpayment_main.get())
+        verify_principal = int(principal.get())
+        verify_interest = float(interest.get())
+        verify_term = int(term.get())
+        verify_downpayment = float(downpayment.get())
         if verify_principal <= 0:
             messagebox.showerror("Purchase Price Error", "Please enter a positive whole number")
             return
@@ -259,61 +285,52 @@ def verification():
 
     #open a new frame to verify information entered
 
-    verify_info.pack(fill='both', expand = 1)
-    close_mortgage_calc.pack_forget()
+    verify_frame.pack(fill='both', expand = 1)
+    mortgage_calculator1.pack_forget()
 
     # give user option to make changes or keep existing
 
-    verifylabelone = Label(verify_info, text = "Please verify the information provided", font = ('Arial', 20))
+    verifylabelone = Label(verify_frame, text = "Please verify the information provided", font = ('Arial', 20))
     verifylabelone.grid(row = 0, column = 1)
-    verifylabeltwo = Label(verify_info, text = "If correct, press submit, otherwise make", font = ('Arial', 20))
+    verifylabeltwo = Label(verify_frame, text = "If correct, press submit, otherwise make", font = ('Arial', 20))
     verifylabeltwo.grid(row = 1, column = 1)
-    verifylabelthree = Label(verify_info, text = "corrections and press submit",font = ('Arial', 20))
+    verifylabelthree = Label(verify_frame, text = "corrections and press submit",font = ('Arial', 20))
     verifylabelthree.grid(row = 2, column = 1)
 
     #create entry widget showing values entered
 
-    update_principal = Entry(verify_info, width = 20)
+    update_principal = Entry(verify_frame, width = 20)
     update_principal.grid(row = 3, column = 1, pady = (20, 0), padx = 20, ipadx = 50)
-    update_interest = Entry(verify_info, width =20)
+    update_interest = Entry(verify_frame, width =20)
     update_interest.grid(row=4, column=1, padx = 20, ipadx = 50)
-    update_term = Entry(verify_info, width=20)
+    update_term = Entry(verify_frame, width=20)
     update_term.grid(row=5, column=1, padx=20, ipadx=50)
-    update_downpayment = Entry(verify_info, width=20)
+    update_downpayment = Entry(verify_frame, width=20)
     update_downpayment.grid(row=6, column=1, padx=20, ipadx=50)
 
     #add labels to show on screen
 
-    update_principal_label = Label(verify_info, text = "Verify Principal")
+    update_principal_label = Label(verify_frame, text = "Verify Principal")
     update_principal_label.grid(row = 3, column = 0, pady = (20,0), padx = (80,0), sticky = 'W')
-    update_interest_label = Label(verify_info, text = "Verify Interest")
+    update_interest_label = Label(verify_frame, text = "Verify Interest")
     update_interest_label.grid(row = 4, column = 0, padx = (80,0), sticky = 'W')
-    update_term_label = Label(verify_info, text = "Verify Yearly Terms")
+    update_term_label = Label(verify_frame, text = "Verify Yearly Terms")
     update_term_label.grid(row = 5, column = 0, padx = (80,0), sticky = 'W')
-    update_downpayment_label = Label(verify_info, text = "Down Payment")
+    update_downpayment_label = Label(verify_frame, text = "Down Payment")
     update_downpayment_label.grid(row = 6, column = 0, padx = (80,0), sticky = 'W')
 
     #show the values within the entry fields
 
-    update_principal.insert(5, principal_main.get())
-    update_interest.insert(5, interest_main.get())
-    update_term.insert(5, term_main.get())
-    update_downpayment.insert(5, downpayment_main.get())
+    update_principal.insert(5, principal.get())
+    update_interest.insert(5, interest.get())
+    update_term.insert(5, term.get())
+    update_downpayment.insert(5, downpayment.get())
 
-    #redo the gloabl variables
+   #create the submit button
 
-    global principal_verify
-    principal_verify = update_principal
-    global interest_verify
-    interest_verify = update_interest
-    global term_verify
-    term_verify = update_term
-    global downpayment_verify
-    downpayment_verify = update_downpayment
-
-    #create the submit button
-
-    submit_button = Button(verify_info, text = "Submit", command = calculate_result)
+    submit_button = Button(verify_frame, text = "Submit", command = lambda: calculate_result(mortgage_calculator, verify_frame,
+                                                                                             update_principal, update_interest,
+                                                                                             update_term, update_downpayment, calculate_frame))
     submit_button.grid(row = 7, column = 1, pady = (20,0))
 
 # this starts the function for the first mortgage calculation
@@ -322,8 +339,8 @@ def mortgagecalc():
 
 #this starts the function for the first mortgage calculation
 #by creating a new window
-    new_file.destroy()
-    mortgage_calculator = Tk()
+    new_file.withdraw()
+    mortgage_calculator = Toplevel()
     mortgage_calculator.title("Mortgage Calculator")
     mortgage_calculator.geometry('1000x600')
 
@@ -362,31 +379,16 @@ def mortgagecalc():
     downpayment_label = Label(mortgage_calculator1, text = "Enter down payment as a percentage e.g 5 for 5%", padx = 40)
     downpayment_label.grid(row = 6, column = 0, padx = 40, pady = (0,5), sticky = "W")
 
-    #assign values as global
-
-    global principal_main
-    principal_main = principal
-    global interest_main
-    interest_main = interest
-    global term_main
-    term_main = term
-    global downpayment_main
-    downpayment_main = downpayment
-
-    #creating frames and assigning global variables
+   #creating frames
 
     verify_frame = LabelFrame(mortgage_calculator)
-    global verify_info
-    verify_info = verify_frame
-    global close_mortgage_calc
-    close_mortgage_calc = mortgage_calculator1
     calculate_frame = LabelFrame(mortgage_calculator)
-    global calculation
-    calculation = calculate_frame
 
 #create submit button
 
-    submit_info = Button(mortgage_calculator1, text = "Submit", command = verification)
+    submit_info = Button(mortgage_calculator1, text = "Submit", command = lambda:  verification(mortgage_calculator, verify_frame,
+                                                                                                principal, interest, term, downpayment,
+                                                                                                mortgage_calculator1, calculate_frame))
     submit_info.grid(row = 7, column = 0, sticky = 'E', pady = 10)
 
 def refinancecalc():
