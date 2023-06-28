@@ -4,9 +4,12 @@ import numpy as np
 import pandas as pd
 import csv
 import matplotlib.pyplot as plt
-import seaborn as sns
 from tkinter import *
 from tkinter import messagebox
+import locale
+locale.setlocale(locale.LC_ALL, '')
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 
 #allow for use of different functions for different windows
 
@@ -84,10 +87,136 @@ def calculate_result():
         messagebox.showerror("error", "Please enter a whole number")
         return
 
-    calculate = Toplevel()
-    calculate.grab_set()
-    calculate.title("Results")
-    calculate.geometry('800x400')
+    calculation.pack(fill='both', expand=1)
+    verify_info.pack_forget()
+
+    #creating lists for dataframe use
+
+    monthly_principal = []
+    interest_paid = []
+    running_balance = []
+
+    #making the calculations
+
+    month_term = verify_term1*12
+    monthly_interest = 1 + (verify_interest1)/(12*100)
+    principal_amt = verify_principal1-(verify_principal1*(verify_downpayment1/100))
+    monthly_payment = principal_amt*(monthly_interest**month_term)*(1-monthly_interest)/(1-monthly_interest**month_term)
+
+    #calculate monthly interest and principal
+
+    totalamount = principal_amt #placeholder
+
+    for i in range(1, month_term + 1):
+        monthint = totalamount*(monthly_interest - 1)
+        totalamount = round(totalamount - (monthly_payment - monthint), 2)
+        interest_paid = np.append(interest_paid, monthint)
+        running_balance = np.append(running_balance, totalamount)
+    running_balance[-1] = 0
+
+
+    np.set_printoptions(suppress=True)
+
+    #calculate total interest paid
+
+    totalinterest = 0
+    for i in interest_paid:
+        totalinterest += i
+
+    #calculate total principal paid
+
+    total_mortgage = principal_amt + totalinterest
+
+    #calculate monthly principal payment
+
+    for j in interest_paid:
+        monthly_principal1 = monthly_payment - j
+        monthly_principal = np.append(monthly_principal, monthly_principal1)
+
+    #calculate beginning balance
+
+    begin_balance = [285000]
+
+    for i in running_balance[:-1]:
+        begin_balance = np.append(begin_balance, i)
+
+
+    #adding formatting
+
+    verify_principal1 = locale.currency(verify_principal1, grouping = True)
+    monthly_payment = locale.currency(monthly_payment, grouping = True)
+    totalinterest = locale.currency(totalinterest, grouping = True)
+    total_mortgage = locale.currency(total_mortgage, grouping = True)
+   #creating the DataFrame
+
+    results = LabelFrame(calculation, width = 100, height = 100)
+    results.pack(pady = 20, padx = 20, side = LEFT)
+    results1 = Label(results, text = "Mortgage Results", font = ('Arial', 12))
+    results1.grid(row = 0, column = 0, columnspan = 2)
+    saleprice = Label(results, text = "Sales Price")
+    saleprice.grid(row = 1, column = 0, pady = (10,0), sticky = 'W')
+    saleprice2 = Label(results, text = verify_principal1)
+    saleprice2.grid(row =1, column =1, pady = (10,0), sticky = 'E')
+    int_result = Label(results, text = "Interest Rate")
+    int_result.grid(row = 2, column = 0, sticky = 'W')
+    int_result1 = Label(results, text = str(verify_interest1) + '%')
+    int_result1.grid(row =2, column =1, sticky = 'E')
+    term_result = Label(results, text = "Mortgage Term")
+    term_result.grid(row = 3, column = 0, sticky = 'W')
+    term_result1 = Label(results, text = verify_term1)
+    term_result1.grid(row =3, column =1, sticky = 'E')
+    downpayment_result = Label(results, text = "Down Payment")
+    downpayment_result.grid(row = 4, column = 0, sticky = 'W')
+    downpayment_result1 = Label(results, text = str(verify_downpayment1) + '%')
+    downpayment_result1.grid(row =4, column =1, sticky = 'E')
+    monthlypayment_result = Label(results, text = "Monthly Payment")
+    monthlypayment_result.grid(row = 5, column = 0, sticky = 'W')
+    monthlypayment1_result = Label(results, text = monthly_payment)
+    monthlypayment1_result.grid(row =5, column =1, sticky = 'E')
+    totalinterest_result = Label(results, text = "Total Interest")
+    totalinterest_result.grid(row = 6, column = 0, sticky = 'W')
+    totalinterest_result1 = Label(results, text = totalinterest)
+    totalinterest_result1.grid(row =6, column =1, sticky = 'E')
+    totalpaid_result = Label(results, text = "Total Paid")
+    totalpaid_result.grid(row = 7, column = 0, sticky = 'W')
+    totalpaid_result1 = Label(results, text = total_mortgage)
+    totalpaid_result1.grid(row =7, column =1, sticky = 'E')
+
+    result_title1 = Label(calculation, text = 'Mortgage Calculated', font = ('Arial', 20))
+    result_title1.pack(anchor = 'nw', padx = (60,0))
+
+
+
+    #create DataFrame
+
+    month_num = []
+    for months in range(1, month_term + 1):
+        month_num = np.append(month_num, months)
+    month_num = (month_num.astype(int))
+
+
+
+    result_data = {'Beginning Balance' : begin_balance, 'Principal Paid' : monthly_principal, 'Interest Paid' : interest_paid, 'Ending Balance' : running_balance}
+
+    mortgage_result = pd.DataFrame(result_data)
+    for i in result_data.keys():
+        mortgage_result[i] = mortgage_result[i].map(locale.currency)
+    mortgage_result = mortgage_result.set_index(month_num)
+
+
+    #create graph
+
+    y1 = result_data['Principal Paid']
+    y2 = result_data['Interest Paid']
+    x = month_num
+    plt.title('Principal vs Interest over time')
+    graph = plt.Figure(figsize=(5,4), dpi = 100)
+    graph.add_subplot(111).plot(x, y1, y2)
+
+    chart = FigureCanvasTkAgg(graph, calculation)
+
+    chart.get_tk_widget().pack(pady = (20,0))
+
 
 
 
@@ -128,12 +257,10 @@ def verification():
         messagebox.showerror("Value Error", "Please enter a valid number")
         return
 
-    #create a new window to verify information entered
+    #open a new frame to verify information entered
 
-    verify_info = Toplevel()
-    verify_info.grab_set()
-    verify_info.title("Verification")
-    verify_info.geometry('800x400')
+    verify_info.pack(fill='both', expand = 1)
+    close_mortgage_calc.pack_forget()
 
     # give user option to make changes or keep existing
 
@@ -186,7 +313,7 @@ def verification():
 
     #create the submit button
 
-    submit_button = Button(verify_info, text = "Submit", command = lambda: calculate_result())
+    submit_button = Button(verify_info, text = "Submit", command = calculate_result)
     submit_button.grid(row = 7, column = 1, pady = (20,0))
 
 # this starts the function for the first mortgage calculation
@@ -198,12 +325,14 @@ def mortgagecalc():
     new_file.destroy()
     mortgage_calculator = Tk()
     mortgage_calculator.title("Mortgage Calculator")
-    mortgage_calculator.geometry('800x400')
+    mortgage_calculator.geometry('1000x600')
 
+    mortgage_calculator1 = LabelFrame(mortgage_calculator)
+    mortgage_calculator1.pack(fill='both', expand = 1)
 
 #introduction line
-    mortgage_label1 = Label(mortgage_calculator, text = "Please enter the information", font = ('Arial', 20))
-    mortgage_label2 = Label(mortgage_calculator, text = "to calculate your monthly payment", font = ('Arial', 20))
+    mortgage_label1 = Label(mortgage_calculator1, text = "Please enter the information", font = ('Arial', 20))
+    mortgage_label2 = Label(mortgage_calculator1, text = "to calculate your monthly payment", font = ('Arial', 20))
     mortgage_label1.grid(row = 0, column = 0, columnspan = 2, padx =40)
     mortgage_label2.grid(row=1, column=0, columnspan = 2, padx = 40, pady = (0,20))
 
@@ -213,24 +342,24 @@ def mortgagecalc():
     term = IntVar()
     downpayment = DoubleVar()
 
-    principal = Entry(mortgage_calculator, width = 20)
+    principal = Entry(mortgage_calculator1, width = 20)
     principal.grid(row = 3, column = 1, padx = 20, ipadx = 50)
-    interest = Entry(mortgage_calculator, width = 20)
+    interest = Entry(mortgage_calculator1, width = 20)
     interest.grid(row = 4, column = 1, ipadx = 50)
-    term = Entry(mortgage_calculator, width = 20)
+    term = Entry(mortgage_calculator1, width = 20)
     term.grid(row = 5, column = 1, ipadx = 50)
-    downpayment = Entry(mortgage_calculator, width = 20)
+    downpayment = Entry(mortgage_calculator1, width = 20)
     downpayment.grid(row = 6, column =1, ipadx = 50)
 
 #Create input labels
 
-    principal_label = Label(mortgage_calculator, text = "Enter purchase price as a whole number  e.g 300000", padx = 40)
+    principal_label = Label(mortgage_calculator1, text = "Enter purchase price as a whole number  e.g 300000", padx = 40)
     principal_label.grid(row = 3, column = 0, padx = 40, pady = (0,5), sticky = "W")
-    interest_label = Label(mortgage_calculator, text="Enter interest as a percentage  e.g 3.9 for 3.9%", padx=40)
+    interest_label = Label(mortgage_calculator1, text="Enter interest as a percentage  e.g 3.9 for 3.9%", padx=40)
     interest_label.grid(row = 4, column = 0, padx = 40, pady = (0,5), sticky = "W")
-    term_label = Label(mortgage_calculator, text = "Enter the term in years  e.g 30 for 30 years", padx = 40)
+    term_label = Label(mortgage_calculator1, text = "Enter the term in years  e.g 30 for 30 years", padx = 40)
     term_label.grid(row = 5, column = 0, padx = 40, pady = (0,5), sticky = "W")
-    downpayment_label = Label(mortgage_calculator, text = "Enter down payment as a percentage e.g 5 for 5%", padx = 40)
+    downpayment_label = Label(mortgage_calculator1, text = "Enter down payment as a percentage e.g 5 for 5%", padx = 40)
     downpayment_label.grid(row = 6, column = 0, padx = 40, pady = (0,5), sticky = "W")
 
     #assign values as global
@@ -244,13 +373,21 @@ def mortgagecalc():
     global downpayment_main
     downpayment_main = downpayment
 
+    #creating frames and assigning global variables
+
+    verify_frame = LabelFrame(mortgage_calculator)
+    global verify_info
+    verify_info = verify_frame
+    global close_mortgage_calc
+    close_mortgage_calc = mortgage_calculator1
+    calculate_frame = LabelFrame(mortgage_calculator)
+    global calculation
+    calculation = calculate_frame
+
 #create submit button
 
-    submit_info = Button(mortgage_calculator, text = "Submit", command = lambda: verification())
+    submit_info = Button(mortgage_calculator1, text = "Submit", command = verification)
     submit_info.grid(row = 7, column = 0, sticky = 'E', pady = 10)
-
-
-
 
 def refinancecalc():
     return
@@ -261,13 +398,6 @@ def extrapaycalc():
 
 def proceedscalc():
     return
-
-
-
-
-
-
-
 
 
 new_file.mainloop()
