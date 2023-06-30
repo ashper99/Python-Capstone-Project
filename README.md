@@ -98,6 +98,12 @@ Changes
 
 This section will include changes to the program for new versions.
 
+Section 7
+
+Operating System
+
+Windows
+
 
 
 
