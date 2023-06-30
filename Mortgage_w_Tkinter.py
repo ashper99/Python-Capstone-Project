@@ -11,6 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib
 
+
 #allow for use of different functions for different windows
 def choice():
     if module.get() == 'Mortgage Calculation':
@@ -63,12 +64,20 @@ end_program.grid(row = 6, column = 1, pady = 20, ipadx = 20, sticky = 'E')
 
 #function to save ammortization file
 def save(mortgage_result):
-    mortgage_result.to_csv('mortgage_result.csv', encoding = 'utf-8',index = False)
+
+    file_path = filedialog.asksaveasfilename(
+        filetypes = [("Excel file", ".xlsx"), ("CSV file", ".csv")],
+        defaultextension = '.xlsx')
+    if(file_path):
+        if file_path.endswith('.csv'):
+            mortgage_result.to_csv(file_path, index=False)
+        else:
+            mortgage_result.to_excel(file_path, index = False)
+        messagebox.showinfo("showinfo", "File Saved")
 
 def return_file(mortgage_calculator):
     mortgage_calculator.withdraw()
     new_file.deiconify()
-
 
 def calculate_result(mortgage_calculator, verify_frame, update_principal, update_interest,
                                                          update_term, update_downpayment,
@@ -240,7 +249,7 @@ def calculate_result(mortgage_calculator, verify_frame, update_principal, update
     chart.get_tk_widget().pack(pady = (20,0))
 
     #create save and close buttons
-    save_button = Label(calculate_frame, text = "Press Save to save a CSV file.  Press Close to return to main screen")
+    save_button = Label(calculate_frame, text = "Press Save to save to Excel or CSV.  Press Close to return to main screen")
     save_button.pack(side = BOTTOM, padx =(0,120))
     btnsave = Button(calculate_frame, text = 'Save', command = lambda: save(mortgage_result))
     btnsave.pack(side = LEFT, padx = 200, pady = (10,10), ipadx = 20)
