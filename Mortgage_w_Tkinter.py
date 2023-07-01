@@ -235,20 +235,19 @@ def calculate_result(mortgage_calculator, verify_frame, update_principal, update
     y1 = result_data['Principal Paid']
     y2 = result_data['Interest Paid']
     x = month_num
-    y = ['Principal', 'Interest']
-
     graph = Figure(figsize=(6,4))
     ax = graph.add_subplot(111)
     ax.set_title("Principal vs Interest Over Life of Loan")
-    ax.set_ylabel('Principal and Interest Payments')
+    ax.set_ylabel("Principal and Interest")
     ax.set_xlabel('Months')
-    ax.legend(['y'], fontsize = "80", loc = 'best')
     ax.plot(x, y1, y2)
+    ax.legend(['Principal', 'Interest'], fontsize = 10)
     matplotlib.rcParams['figure.autolayout'] = True
     chart = FigureCanvasTkAgg(graph, calculate_frame)
     chart.get_tk_widget().pack(pady = (20,0))
 
     #create save and close buttons
+
     save_button = Label(calculate_frame, text = "Press Save to save to Excel or CSV.  Press Close to return to main screen")
     save_button.pack(side = BOTTOM, padx =(0,120))
     btnsave = Button(calculate_frame, text = 'Save', command = lambda: save(mortgage_result))

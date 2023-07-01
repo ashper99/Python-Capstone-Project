@@ -2,7 +2,7 @@
 
 Financing Calculators
 
-version 1.1
+version 1.1 - see section 6 for changes
 
 Section 1
 
@@ -60,7 +60,7 @@ Once again, checks are made to ensure the correct information is entered.  Once 
 will be displayed along with a graph showing principal and interest payments over each month.  
 
 
-![img_1.png](img_1.png)
+![img_2.png](img_2.png)
 
 The user will have the option to save the ammortization file as a .csv  or .xlsx file on the local computer
 utilizing filedialog.asksaveasfilename.
@@ -96,7 +96,8 @@ Section 6
 
 Changes
 
-This section will include changes to the program for new versions.
+Version 1 - Created program
+Version 1.1 - fixed legend in graph
 
 Section 7
 
