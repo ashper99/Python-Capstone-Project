@@ -46,7 +46,9 @@
 
    When the user presses submit for the mortgage calculator, this is the screen that appears
 
-   ![](C:\Users\ashpe\PycharmProjects\Mortgage_Project\Screenshot 2023-07-09 135618.png)
+   ![Alt text](image-7.png)
+
+  
 
 3. Once the information is entered, a check is made to ensure 
    the information entered is accurate.
