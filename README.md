@@ -2,7 +2,7 @@
 
 ## _Financing Calculators_
 
-#####  _version 1.2 - see section 6 for changes_
+#####  _version 1.3 - see section 6 for changes_
 
 ## Table of Contents
 
@@ -46,7 +46,7 @@
 
    When the user presses submit for the mortgage calculator, this is the screen that appears
 
-   ![Alt text](image-1.png)
+   ![](C:\Users\ashpe\PycharmProjects\Mortgage_Project\Screenshot 2023-07-09 135618.png)
 
 3. Once the information is entered, a check is made to ensure 
    the information entered is accurate.
@@ -105,6 +105,7 @@
 - Version 1.1 - fixed legend in graph
 - Version 1.2 - reformatted using Black.  Added additional information to locale code to 
         allow for currency to show in Mac OS.
+- Version 1.3 - made changes to fields to show examples
 
 ### Section 7
 

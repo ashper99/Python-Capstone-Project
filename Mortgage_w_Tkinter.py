@@ -479,28 +479,32 @@ def mortgagecalc():
 
     principal_label = Label(
         mortgage_calculator1,
-        text="Enter purchase price as a whole number  e.g 300000",
+        text="Enter purchase price as a whole number",
         padx=40,
     )
     principal_label.grid(row=3, column=0, padx=40, pady=(0, 5), sticky="W")
+    principal.insert(1, "example 300000")
     interest_label = Label(
         mortgage_calculator1,
-        text="Enter interest as a percentage  e.g 3.9 for 3.9%",
+        text="Enter interest as a percentage",
         padx=40,
     )
     interest_label.grid(row=4, column=0, padx=40, pady=(0, 5), sticky="W")
+    interest.insert(1, "example 3.9 for 3.9%")
     term_label = Label(
         mortgage_calculator1,
-        text="Enter the term in years  e.g 30 for 30 years",
+        text="Enter the term in years",
         padx=40,
     )
     term_label.grid(row=5, column=0, padx=40, pady=(0, 5), sticky="W")
+    term.insert(1, "Years")
     downpayment_label = Label(
         mortgage_calculator1,
-        text="Enter down payment as a percentage e.g 5 for 5%",
+        text="Enter down payment as a percentage",
         padx=40,
     )
     downpayment_label.grid(row=6, column=0, padx=40, pady=(0, 5), sticky="W")
+    downpayment.insert(1, "example 5 for 5%")
 
     # creating frames
 
@@ -526,9 +530,195 @@ def mortgagecalc():
     submit_info.grid(row=7, column=0, sticky="E", pady=10)
 
 
-def refinancecalc():
-    """Future option for refinancing"""
-    return
+""" def refi_verification(
+    refinance_calc,
+    verify_frame1,
+    original_amount,
+    original_interest,
+    original_term,
+    years_remain,
+    months_remain,
+    current_payment,
+    new_interest,
+    new_term,
+    close_costs,
+    refinance_calc1,
+    calculate_frame1,
+):
+    return 
+
+
+ def refinancecalc():
+    # Future option for refinancing
+    new_file.withdraw()
+    refinance_calc = Toplevel()
+    refinance_calc.title("Refinance Calculator")
+    refinance_calc.geometry("1000x600")
+
+    refinance_calc1 = LabelFrame(refinance_calc)
+    refinance_calc1.pack(fill="both", expand=1)
+
+    # introduction line
+    refinance_label1 = Label(
+        refinance_calc1, text="Please enter the information", font=("Arial", 20)
+    )
+    refinance_label2 = Label(
+        refinance_calc1,
+        text="to calculate your refinance option",
+        font=("Arial", 20),
+    )
+    refinance_label1.grid(row=0, column=0, columnspan=2, padx=40)
+    refinance_label2.grid(row=1, column=0, columnspan=2, padx=40, pady=(0, 20))
+
+    # input fields
+
+    orignal_amount = IntVar()
+    original_interest = DoubleVar()
+    original_term = IntVar()
+    years_remain = IntVar()
+    months_remain = IntVar()
+    new_interest = DoubleVar()
+    new_term = IntVar()
+    current_payment = DoubleVar()
+    close_costs = IntVar()
+
+    # original amounts
+
+    original_amount = Entry(refinance_calc1, width=20)
+    original_amount.grid(row=4, column=1, padx=20, ipadx=40)
+    original_interest = Entry(refinance_calc1, width=20)
+    original_interest.grid(row=5, column=1, ipadx=40)
+    original_term = Entry(refinance_calc1, width=20)
+    original_term.grid(row=6, column=1, ipadx=40)
+    years_remain = Entry(refinance_calc1, width=20)
+    years_remain.grid(row=7, column=1, ipadx=40)
+    months_remain = Entry(refinance_calc1, width=20)
+    months_remain.grid(row=8, column=1, ipadx=40)
+    current_payment = Entry(refinance_calc1, width=20)
+    current_payment.grid(row=9, column=1, padx=20, ipadx=40)
+
+    # new amounts
+    new_term = Entry(refinance_calc1, width=20)
+    new_term.grid(row=11, column=1, padx=20, ipadx=50)
+    new_interest = Entry(refinance_calc1, width=20)
+    new_interest.grid(row=12, column=1, padx=20, ipadx=50)
+    close_costs = Entry(refinance_calc1, width=20)
+    close_costs.grid(row=13, column=1, padx=20, ipadx=50)
+
+    # create the labels
+
+    original_loan_label = Label(
+        refinance_calc1, text="Current Loan", font=("Arial", 14), padx=40, pady=20
+    )
+    original_loan_label.grid(
+        row=3,
+        column=0,
+        padx=40,
+        pady=(0, 5),
+        columnspan=2,
+    )
+    original_amount_label = Label(
+        refinance_calc1,
+        text="Enter original purchase price as a whole number",
+        padx=40,
+    )
+    original_amount_label.grid(row=4, column=0, padx=40, pady=(0, 5), sticky="W")
+    original_amount.insert(1, "example 300000")
+    original_interest_label = Label(
+        refinance_calc1,
+        text="Enter original interest rate as a percentage",
+        padx=40,
+    )
+    original_interest_label.grid(row=5, column=0, padx=40, pady=(0, 5), sticky="W")
+    original_interest.insert(1, "example 3.9 for 3.9%")
+    original_term_label = Label(
+        refinance_calc1,
+        text="Enter original loan term in years",
+        padx=40,
+    )
+    original_term_label.grid(row=6, column=0, padx=40, pady=(0, 5), sticky="W")
+    original_term.insert(1, "Years")
+    years_remain_label = Label(
+        refinance_calc1,
+        text="Enter the number of years and months remaining",
+        padx=40,
+    )
+    years_remain_label.grid(row=7, column=0, padx=40, pady=(0, 5), sticky="W")
+    months_remain_label = Label(refinance_calc1, text="", padx=40)
+    months_remain_label.grid(row=8, column=0, padx=40, pady=(0, 5), sticky="W")
+    years_remain.insert(1, "Years")
+    months_remain.insert(1, "Months")
+    current_payment_label = Label(
+        refinance_calc1,
+        text="Enter the monthly payment of principal and interest only",
+        padx=40,
+    )
+    current_payment_label.grid(row=9, column=0, padx=40, pady=(0, 5), sticky="W")
+    current_payment.insert(1, "example 1,501.12")
+
+    # insert labels for new loan amounts
+
+    new_loan_label = Label(
+        refinance_calc1, text="New Loan", font=("Arial", 14), padx=40, pady=20
+    )
+    new_loan_label.grid(
+        row=10,
+        column=0,
+        padx=40,
+        pady=(0, 5),
+        columnspan=2,
+    )
+    new_term_label = Label(
+        refinance_calc1,
+        text="Enter the new loan term in years",
+        padx=40,
+    )
+    new_term_label.grid(row=11, column=0, padx=40, pady=(0, 5), sticky="W")
+    new_term.insert(1, "Years")
+
+    new_interest_label = Label(
+        refinance_calc1,
+        text="Enter the new interest rate as a percentage",
+        padx=40,
+    )
+    new_interest_label.grid(row=12, column=0, padx=40, pady=(0, 5), sticky="W")
+    new_interest.insert(1, "example 3.9 for 3.9%")
+
+    close_costs_label = Label(
+        refinance_calc1,
+        text="Enter estimated closing costs",
+        padx=40,
+    )
+    close_costs_label.grid(row=13, column=0, padx=40, pady=(0, 5), sticky="W")
+    close_costs.insert(1, "5000 is average")
+
+    # creating frames
+
+    verify_frame1 = LabelFrame(refinance_calc)
+    calculate_frame1 = LabelFrame(refinance_calc)
+
+    # create submit button
+
+    submit_info1 = Button(
+        refinance_calc1,
+        text="Submit",
+        command=lambda: refi_verification(
+            refinance_calc,
+            verify_frame1,
+            original_amount,
+            original_interest,
+            original_term,
+            years_remain,
+            months_remain,
+            current_payment,
+            new_interest,
+            new_term,
+            close_costs,
+            refinance_calc1,
+            calculate_frame1,
+        ),
+    )
+    submit_info1.grid(row=14, column=0, sticky="E", pady=10) """
 
 
 def extrapaycalc():
