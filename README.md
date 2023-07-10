@@ -2,7 +2,7 @@
 
 ## _Financing Calculators_
 
-#####  _version 1.3 - see section 6 for changes_
+#####  _version 1.4 - see section 6 for changes_
 
 ## Table of Contents
 
@@ -108,6 +108,7 @@
 - Version 1.2 - reformatted using Black.  Added additional information to locale code to 
         allow for currency to show in Mac OS.
 - Version 1.3 - made changes to fields to show examples
+- Version 1.4 - added additional formatting to frames.  Started work on refinance calculator
 
 ### Section 7
 

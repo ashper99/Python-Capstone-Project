@@ -395,22 +395,24 @@ def verification(
     update_principal = Entry(verify_frame, width=20)
     update_principal.grid(row=3, column=1, pady=(20, 0), padx=20, ipadx=50)
     update_interest = Entry(verify_frame, width=20)
-    update_interest.grid(row=4, column=1, padx=20, ipadx=50)
+    update_interest.grid(row=4, column=1, padx=20, pady=(5, 0), ipadx=50)
     update_term = Entry(verify_frame, width=20)
-    update_term.grid(row=5, column=1, padx=20, ipadx=50)
+    update_term.grid(row=5, column=1, padx=20, pady=(5, 0), ipadx=50)
     update_downpayment = Entry(verify_frame, width=20)
-    update_downpayment.grid(row=6, column=1, padx=20, ipadx=50)
+    update_downpayment.grid(row=6, column=1, padx=20, pady=(5, 0), ipadx=50)
 
     # add labels to show on screen
 
-    update_principal_label = Label(verify_frame, text="Verify Principal")
+    update_principal_label = Label(verify_frame, text="Verify Purchase Price")
     update_principal_label.grid(row=3, column=0, pady=(20, 0), padx=(80, 0), sticky="W")
     update_interest_label = Label(verify_frame, text="Verify Interest")
-    update_interest_label.grid(row=4, column=0, padx=(80, 0), sticky="W")
+    update_interest_label.grid(row=4, column=0, padx=(80, 0), pady=(5, 0), sticky="W")
     update_term_label = Label(verify_frame, text="Verify Yearly Terms")
-    update_term_label.grid(row=5, column=0, padx=(80, 0), sticky="W")
+    update_term_label.grid(row=5, column=0, padx=(80, 0), pady=(5, 0), sticky="W")
     update_downpayment_label = Label(verify_frame, text="Down Payment")
-    update_downpayment_label.grid(row=6, column=0, padx=(80, 0), sticky="W")
+    update_downpayment_label.grid(
+        row=6, column=0, padx=(80, 0), pady=(5, 0), sticky="W"
+    )
 
     # show the values within the entry fields
 
@@ -467,13 +469,13 @@ def mortgagecalc():
     downpayment = DoubleVar()
 
     principal = Entry(mortgage_calculator1, width=20)
-    principal.grid(row=3, column=1, padx=20, ipadx=50)
+    principal.grid(row=3, column=1, padx=20, pady=(0, 5), ipadx=50)
     interest = Entry(mortgage_calculator1, width=20)
-    interest.grid(row=4, column=1, ipadx=50)
+    interest.grid(row=4, column=1, pady=(0, 5), ipadx=50)
     term = Entry(mortgage_calculator1, width=20)
-    term.grid(row=5, column=1, ipadx=50)
+    term.grid(row=5, column=1, pady=(0, 5), ipadx=50)
     downpayment = Entry(mortgage_calculator1, width=20)
-    downpayment.grid(row=6, column=1, ipadx=50)
+    downpayment.grid(row=6, column=1, pady=(0, 5), ipadx=50)
 
     # Create input labels
 
@@ -530,7 +532,90 @@ def mortgagecalc():
     submit_info.grid(row=7, column=0, sticky="E", pady=10)
 
 
-""" def refi_verification(
+def calculate_result1(
+    refinance_calc,
+    verify_frame1,
+    update_original_amount,
+    update_original_interest,
+    update_original_term,
+    update_years_remain,
+    update_months_remain,
+    update_current_payment,
+    update_new_interest,
+    update_new_term,
+    update_close_costs,
+    calculate_frame1,
+):
+    return
+
+
+def remaining_balance(
+    original_amount, original_interest, original_term, years_remain, months_remain
+):
+    """Formula to calculate remaining loan balance"""
+
+    # check for errors
+
+    try:
+        verify_original_amount = int(original_amount.get())
+        verify_original_interest = float(original_interest.get())
+        verify_original_term = int(original_term.get())
+        verify_years_remain = int(years_remain.get())
+        verify_months_remain = int(months_remain.get())
+
+        if verify_original_amount <= 0:
+            messagebox.showerror(
+                "Original Price Error", "Please enter a positive whole number"
+            )
+            return
+        elif verify_original_interest < 0:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_original_interest > 20:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_original_term <= 0:
+            messagebox.showerror("Term Error", "Please enter a valid term in years")
+            return
+        elif verify_original_term >= 51:
+            messagebox.showerror("Term Error", "Please enter a valid term in years")
+            return
+        elif verify_years_remain <= 0:
+            messagebox.showerror("Years Error", "Please enter a valid number")
+            return
+        elif verify_years_remain >= verify_original_term:
+            messagebox.showerror("Years Error", "Years must be less than original term")
+            return
+        elif verify_months_remain < 0:
+            messagebox.showerror("Months Error", "Please enter a valid number")
+            return
+        elif verify_months_remain > 11:
+            messagebox.showerror("Months Error", "Months must be less than 12")
+            return
+        else:
+            pass
+    except ValueError:
+        messagebox.showerror("Value Error", "Please enter a valid number")
+        return
+
+    month_int1 = (verify_original_interest / 12) / 100
+
+    original_month_term = verify_original_term * 12
+    payment_made = original_month_term - (
+        (verify_years_remain * 12) + verify_months_remain
+    )
+    balance_remain = (
+        (verify_original_amount)
+        * (
+            ((1 + month_int1) ** original_month_term)
+            - ((1 + month_int1) ** payment_made)
+        )
+        / (((1 + month_int1) ** original_month_term) - 1)
+    )
+    return balance_remain
+
+
+def refi_verification(
     refinance_calc,
     verify_frame1,
     original_amount,
@@ -545,10 +630,175 @@ def mortgagecalc():
     refinance_calc1,
     calculate_frame1,
 ):
-    return 
+    """Verification frame to allow for opportunity to make changes or keep existing values"""
+
+    # function called to calculate remaining balance of loan to complete further error verifications
+
+    balance = remaining_balance(
+        original_amount, original_interest, original_term, years_remain, months_remain
+    )
+
+    # checking for errors
+
+    try:
+        verify_current_payment = float(current_payment.get())
+        verify_new_interest = float(new_interest.get())
+        verify_new_term = int(new_term.get())
+        verify_close_costs = int(close_costs.get())
+
+        if verify_current_payment <= 0:
+            messagebox.showerror("Payment Error", "Please enter a valid payment amount")
+            return
+        elif verify_current_payment >= balance:
+            messagebox.showerror(
+                "Payment Error", "Payment must be less than remaining balance"
+            )
+            return
+        elif verify_new_interest < 0:
+            messagebox.showerror(
+                "New Interest Error", "Please enter a valid interest rate"
+            )
+            return
+        elif verify_new_interest > 20:
+            messagebox.showerror(
+                "New Interest Error", "Please enter a valid interest rate"
+            )
+            return
+        elif verify_new_term <= 0:
+            messagebox.showerror("New Term Error", "Please enter a valid term in years")
+            return
+        elif verify_new_term > 50:
+            messagebox.showerror("New Term Error", "Please enter a valid term in years")
+            return
+        elif verify_close_costs < 0:
+            messagebox.showerror(
+                "Closing Costs Error", "Please enter estimated closing costs"
+            )
+            return
+        elif verify_close_costs >= balance:
+            messagebox.showerror(
+                "Closing Costs Error",
+                "Closing Costs must be less than remaining balance",
+            )
+            return
+        else:
+            pass
+    except ValueError:
+        messagebox.showerror("Value Error", "Please enter a valid number")
+        return
+
+    # open a new frame to verify information entered
+
+    verify_frame1.pack(fill="both", expand=1)
+    refinance_calc1.pack_forget()
+
+    # give user option to make changes or keep existing
+
+    verifylabelone1 = Label(
+        verify_frame1, text="Please verify the information provided", font=("Arial", 20)
+    )
+    verifylabelone1.grid(row=0, column=1)
+    verifylabeltwo1 = Label(
+        verify_frame1,
+        text="If correct, press submit, otherwise make",
+        font=("Arial", 20),
+    )
+    verifylabeltwo1.grid(row=1, column=1)
+    verifylabelthree1 = Label(
+        verify_frame1, text="corrections and press submit", font=("Arial", 20)
+    )
+    verifylabelthree1.grid(row=2, column=1)
+
+    verifylabeloriginalloan = Label(
+        verify_frame1, text="Original Loan", font=("Arial", 14)
+    )
+    verifylabeloriginalloan.grid(row=3, column=0, columnspan=2, pady=5)
+
+    verifylabelnewloan = Label(verify_frame1, text="New Loan", font=("Arial", 14))
+    verifylabelnewloan.grid(row=10, column=0, columnspan=2, pady=5)
+
+    # create entry widget showing values entered
+
+    update_original_amount = Entry(verify_frame1, width=20)
+    update_original_amount.grid(row=4, column=1, pady=(20, 2), padx=20, ipadx=40)
+    update_original_interest = Entry(verify_frame1, width=20)
+    update_original_interest.grid(row=5, column=1, padx=20, pady=2, ipadx=40)
+    update_original_term = Entry(verify_frame1, width=20)
+    update_original_term.grid(row=6, column=1, padx=20, pady=2, ipadx=40)
+    update_years_remain = Entry(verify_frame1, width=20)
+    update_years_remain.grid(row=7, column=1, padx=20, pady=2, ipadx=40)
+    update_months_remain = Entry(verify_frame1, width=20)
+    update_months_remain.grid(row=8, column=1, padx=20, pady=2, ipadx=40)
+    update_current_payment = Entry(verify_frame1, width=20)
+    update_current_payment.grid(row=9, column=1, padx=20, pady=2, ipadx=40)
+    update_new_interest = Entry(verify_frame1, width=20)
+    update_new_interest.grid(row=11, column=1, padx=20, pady=2, ipadx=40)
+    update_new_term = Entry(verify_frame1, width=20)
+    update_new_term.grid(row=12, column=1, padx=20, pady=2, ipadx=40)
+    update_close_costs = Entry(verify_frame1, width=20)
+    update_close_costs.grid(row=13, column=1, padx=20, pady=2, ipadx=40)
+
+    # add labels to show on screen
+
+    update_original_amount_label = Label(verify_frame1, text="Verify Purchase Price")
+    update_original_amount_label.grid(
+        row=4, column=0, pady=(20, 2), padx=(80, 0), sticky="W"
+    )
+    update_original_interest_label = Label(verify_frame1, text="Verify Interest")
+    update_original_interest_label.grid(
+        row=5, column=0, padx=(80, 0), pady=2, sticky="W"
+    )
+    update_original_term_label = Label(verify_frame1, text="Verify Yearly Term")
+    update_original_term_label.grid(row=6, column=0, padx=(80, 0), pady=2, sticky="W")
+    update_years_remain_label = Label(verify_frame1, text="Years Remain")
+    update_years_remain_label.grid(row=7, column=0, padx=(80, 0), pady=2, sticky="W")
+    update_months_remain_label = Label(verify_frame1, text="Months Remain")
+    update_months_remain_label.grid(row=8, column=0, padx=(80, 0), pady=2, sticky="W")
+    update_current_payment_label = Label(verify_frame1, text="Monthly Payment")
+    update_current_payment_label.grid(row=9, column=0, padx=(80, 0), pady=2, sticky="W")
+    update_new_interest_label = Label(verify_frame1, text="New Interest Rate")
+    update_new_interest_label.grid(row=11, column=0, padx=(80, 0), pady=2, sticky="W")
+    update_new_term_label = Label(verify_frame1, text="New Term")
+    update_new_term_label.grid(row=12, column=0, padx=(80, 0), pady=2, sticky="W")
+    update_close_costs_label = Label(verify_frame1, text="Estimated Closing Costs")
+    update_close_costs_label.grid(row=13, column=0, padx=(80, 0), pady=2, sticky="W")
+
+    # show the values within the entry fields
+
+    update_original_amount.insert(5, original_amount.get())
+    update_original_interest.insert(5, original_interest.get())
+    update_original_term.insert(5, original_term.get())
+    update_years_remain.insert(5, years_remain.get())
+    update_months_remain.insert(5, months_remain.get())
+    update_current_payment.insert(5, current_payment.get())
+    update_new_interest.insert(5, new_interest.get())
+    update_new_term.insert(5, new_term.get())
+    update_close_costs.insert(5, close_costs.get())
+
+    # create the submit button
+
+    submit_button = Button(
+        verify_frame1,
+        text="Submit",
+        command=lambda: calculate_result1(
+            refinance_calc,
+            verify_frame1,
+            update_original_amount,
+            update_original_interest,
+            update_original_term,
+            update_years_remain,
+            update_months_remain,
+            update_current_payment,
+            update_new_interest,
+            update_new_term,
+            update_close_costs,
+            calculate_frame1,
+        ),
+    )
+    submit_button.grid(row=14, column=1, pady=(20, 0))
 
 
- def refinancecalc():
+def refinancecalc():
     # Future option for refinancing
     new_file.withdraw()
     refinance_calc = Toplevel()
@@ -572,7 +822,7 @@ def mortgagecalc():
 
     # input fields
 
-    orignal_amount = IntVar()
+    original_amount = IntVar()
     original_interest = DoubleVar()
     original_term = IntVar()
     years_remain = IntVar()
@@ -585,25 +835,25 @@ def mortgagecalc():
     # original amounts
 
     original_amount = Entry(refinance_calc1, width=20)
-    original_amount.grid(row=4, column=1, padx=20, ipadx=40)
+    original_amount.grid(row=4, column=1, padx=20, pady=(5, 0), ipadx=40)
     original_interest = Entry(refinance_calc1, width=20)
-    original_interest.grid(row=5, column=1, ipadx=40)
+    original_interest.grid(row=5, column=1, pady=(5, 0), ipadx=40)
     original_term = Entry(refinance_calc1, width=20)
-    original_term.grid(row=6, column=1, ipadx=40)
+    original_term.grid(row=6, column=1, pady=(5, 0), ipadx=40)
     years_remain = Entry(refinance_calc1, width=20)
-    years_remain.grid(row=7, column=1, ipadx=40)
+    years_remain.grid(row=7, column=1, pady=(5, 0), ipadx=40)
     months_remain = Entry(refinance_calc1, width=20)
-    months_remain.grid(row=8, column=1, ipadx=40)
+    months_remain.grid(row=8, column=1, pady=(5, 0), ipadx=40)
     current_payment = Entry(refinance_calc1, width=20)
-    current_payment.grid(row=9, column=1, padx=20, ipadx=40)
+    current_payment.grid(row=9, column=1, padx=20, pady=(5, 0), ipadx=40)
 
     # new amounts
     new_term = Entry(refinance_calc1, width=20)
-    new_term.grid(row=11, column=1, padx=20, ipadx=50)
+    new_term.grid(row=11, column=1, padx=20, pady=(5, 0), ipadx=50)
     new_interest = Entry(refinance_calc1, width=20)
-    new_interest.grid(row=12, column=1, padx=20, ipadx=50)
+    new_interest.grid(row=12, column=1, padx=20, pady=(5, 0), ipadx=50)
     close_costs = Entry(refinance_calc1, width=20)
-    close_costs.grid(row=13, column=1, padx=20, ipadx=50)
+    close_costs.grid(row=13, column=1, padx=20, pady=(5, 0), ipadx=50)
 
     # create the labels
 
@@ -718,7 +968,7 @@ def mortgagecalc():
             calculate_frame1,
         ),
     )
-    submit_info1.grid(row=14, column=0, sticky="E", pady=10) """
+    submit_info1.grid(row=14, column=0, sticky="E", pady=10)
 
 
 def extrapaycalc():
