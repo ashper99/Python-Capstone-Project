@@ -2,7 +2,7 @@
 
 ## _Financing Calculators_
 
-#####  _version 1.4 - see section 6 for changes_
+#####  _version 1.5 - see section 6 for changes_
 
 ## Table of Contents
 
@@ -109,6 +109,7 @@
         allow for currency to show in Mac OS.
 - Version 1.3 - made changes to fields to show examples
 - Version 1.4 - added additional formatting to frames.  Started work on refinance calculator
+- Version 1.5 - corrected error to beginning balance placeholder in mortgage calculator.  Continued working on refinance calculator
 
 ### Section 7
 
