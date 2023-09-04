@@ -8,7 +8,7 @@
 
 - ### Section 1 - Overview
 - ### Section 2 - Required Libraries
-- ### Section 3 - Program steps
+- ### Section 3 - Mortgage Calculator
 - ### Section 4 - Errors encountered
 - ### Section 5 - Future Improvements
 - ### Section 6 - Changes and updates

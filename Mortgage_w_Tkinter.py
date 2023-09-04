@@ -209,7 +209,7 @@ def calculate_result(
 
     # calculate beginning balance
 
-    begin_balance = [285000]
+    begin_balance = verify_principal1
 
     for i in running_balance[:-1]:
         begin_balance = np.append(begin_balance, i)
@@ -315,6 +315,7 @@ def calculate_result(
     )
     btnclose.pack(side=LEFT, padx=(0, 150), ipadx=(20), pady=(10, 10))
 
+# Mortgage calculator verification
 
 def verification(
     mortgage_calculator,
@@ -531,6 +532,66 @@ def mortgagecalc():
     )
     submit_info.grid(row=7, column=0, sticky="E", pady=10)
 
+# calculate verified remaining balance
+
+def verify_remaining_balance(update_original_amount, update_original_interest, update_original_term, update_years_remain, update_months_remain, update_current_payment):
+    
+    """recalculates remaining balances if changes made during verification"""
+
+    #check for errors
+
+    try:
+        verify_update_original_amount = int(update_original_amount.get())
+        verify_update_original_interest = float(update_original_interest.get())
+        verify_update_original_term = int(update_original_term.get())
+        verify_update_years_remain = int(update_years_remain.get())
+        verify_update_months_remain = int(update_months_remain.get())
+        verify_update_current_payment = float(update_current_payment.get())
+
+        if verify_update_original_amount <= 0:
+            messagebox.showerror("Original Price Error", "Please enter a positive whole number")
+            return
+        elif verify_update_original_interest < 0:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_update_original_interest > 20:
+            messagebox.showerror("Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_update_original_term <= 0:
+            messagebox.showerror("Term Error", "Please enter a valid term in years")
+            return
+        elif verify_update_original_term > 50:
+            messagebox.showerror("Term Error", "Please enter a valid term in years")
+            return
+        elif verify_update_years_remain <=0:
+            messagebox.showerror("Years Error", "Please enter a valid number")
+            return
+        elif verify_update_years_remain >verify_update_original_term:
+            messagebox,showerror("Years Error", "Years must be less than original term")
+            return
+        elif verify_update_months_remain < 0:
+            messagebox.showerror("Months Error", "Please enter a valid number")
+            return
+        elif verify_update_months_remain > 11:
+            messagebox.showerror("Months Error", "Months must be less than 12")
+            return
+        else:
+            pass
+    except ValueError:
+        messagebox.showerror("Value Error", "Please enter a valid number")
+        return
+    month_int2 = (verify_update_original_interest/12)/100
+    original_month_term1 = verify_update_original_term * 12
+    payment_made1 = original_month_term1 - ((verify_update_years_remain * 12) + verify_update_months_remain)
+    balance_remain1 = (verify_update_original_amount*((1+month_int2)**payment_made1)) - (verify_update_current_payment*((((1 + month_int2)**payment_made1)-1)/month_int2))
+
+    return balance_remain1
+    
+   
+                             
+       
+
+# Calculate result for refinance
 
 def calculate_result1(
     refinance_calc,
@@ -545,12 +606,71 @@ def calculate_result1(
     update_new_term,
     update_close_costs,
     calculate_frame1,
+    
+    
 ):
-    return
+    """ Checks for errors then calculates result"""
 
+    # function called to calculate the remaining balance to verify
+
+    balance1 = verify_remaining_balance(update_original_amount, update_original_interest, update_original_term, update_years_remain, update_months_remain, update_current_payment)
+
+    try:
+        verify_update_current_payment = float(update_current_payment.get())
+        verify_update_new_interest = float(update_new_interest.get())
+        verify_update_new_term = int(update_new_term.get())
+        verify_update_close_costs = float(update_close_costs.get())
+        
+
+        
+        if verify_update_current_payment < 0:
+            messagebox.showerror("Payment Error", "Please enter a valid monthly payment")
+            return
+        elif verify_update_current_payment >= balance1:
+            messagebox.showerror("Payment Error", "Monthly Payment must be less than remaining balance")
+            return
+        elif verify_update_new_interest < 0:
+            messagebox.showerror(" New Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_update_new_interest > 20:
+            messagebox.showerror("New Interest Error", "Please enter a valid interest rate")
+            return
+        elif verify_update_new_term <= 0:
+            messagebox.showerror("New Term Error", "Please enter a valid term in years")
+            return
+        elif verify_update_new_term > 50:
+            messagebox.showerror("New Term Error", "Please enter a valid term in years")
+            return
+        elif verify_update_close_costs < 0:
+            messagebox.showerror("Closing Costs Error", "Please enter a valid amount")
+            return
+        elif verify_update_close_costs >= balance1:
+            messagebox.showerror("Closing Costs Error", "Closing Costs must be less than remaining balance")
+            return
+        else:
+            pass
+    except ValueError:
+        messagebox.showerror("Value Error", "Please enter a valid number")
+        return
+    
+    calculate_frame1.pack(fill="both", expand=1)
+    verify_frame1.pack_forget()
+
+    #calculating
+
+    new_month_term = verify_update_new_term * 12
+    new_month_interest = 1 + (verify_update_new_interest) / (12*100)
+    total_loan = balance1 
+
+    new_payment = (total_loan *(new_month_interest**new_month_term)*(1 - new_month_interest) / (1 - new_month_interest ** new_month_term))
+    print(new_payment)
+    print(balance1)
+
+
+# refinance remaining balance
 
 def remaining_balance(
-    original_amount, original_interest, original_term, years_remain, months_remain
+    original_amount, original_interest, original_term, years_remain, months_remain, current_payment
 ):
     """Formula to calculate remaining loan balance"""
 
@@ -562,6 +682,7 @@ def remaining_balance(
         verify_original_term = int(original_term.get())
         verify_years_remain = int(years_remain.get())
         verify_months_remain = int(months_remain.get())
+        verify_current_payment = float(current_payment.get())
 
         if verify_original_amount <= 0:
             messagebox.showerror(
@@ -604,16 +725,10 @@ def remaining_balance(
     payment_made = original_month_term - (
         (verify_years_remain * 12) + verify_months_remain
     )
-    balance_remain = (
-        (verify_original_amount)
-        * (
-            ((1 + month_int1) ** original_month_term)
-            - ((1 + month_int1) ** payment_made)
-        )
-        / (((1 + month_int1) ** original_month_term) - 1)
-    )
+    balance_remain = (verify_original_amount*((1+month_int1)**payment_made)) - (verify_current_payment*((((1+month_int1)**payment_made)-1)/month_int1))
     return balance_remain
 
+#verify refinance calcs
 
 def refi_verification(
     refinance_calc,
@@ -635,7 +750,7 @@ def refi_verification(
     # function called to calculate remaining balance of loan to complete further error verifications
 
     balance = remaining_balance(
-        original_amount, original_interest, original_term, years_remain, months_remain
+        original_amount, original_interest, original_term, years_remain, months_remain, current_payment
     )
 
     # checking for errors
@@ -799,7 +914,9 @@ def refi_verification(
 
 
 def refinancecalc():
-    # Future option for refinancing
+
+    # refinance calculator
+
     new_file.withdraw()
     refinance_calc = Toplevel()
     refinance_calc.title("Refinance Calculator")
@@ -946,6 +1063,8 @@ def refinancecalc():
 
     verify_frame1 = LabelFrame(refinance_calc)
     calculate_frame1 = LabelFrame(refinance_calc)
+
+    
 
     # create submit button
 
